@@ -1,8 +1,86 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model BoardViewModel
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Sebas Board</h2>
+    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#crearHistoriaModal">
+        Crear nuevo
+    </button>
+</div>
+
+<div class="modal fade" id="crearHistoriaModal" tabindex="-1" aria-labelledby="crearHistoriaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="crearHistoriaModalLabel">Crear User Story</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="Create" method="post">
+                <div class="modal-body">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-2">
+                        <label class="form-label">Título</label>
+                        <input type="text" name="Titulo" class="form-control" required maxlength="120" />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Descripción</label>
+                        <textarea name="Descripcion" class="form-control" rows="3" required maxlength="500"></textarea>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Asignado A</label>
+                        <input type="text" name="AsignadoA" class="form-control" required maxlength="100" />
+                    </div>
+                    <input type="hidden" name="Estado" value="Backlog" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success btn-sm">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+
+    @foreach (var column in new[]
+        {
+        new { Title = "Backlog", Items = Model.Backlog },
+        new { Title = "To Do", Items = Model.ToDo },
+        new { Title = "In Progress", Items = Model.InProgress },
+        new { Title = "Done", Items = Model.Done }
+        })
+    {
+        <div class="col-md-3">
+            <h4>@column.Title</h4>
+
+            @foreach (var story in column.Items)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5>@story.Titulo</h5>
+                        <p>@story.Descripcion</p>
+                        <small>Asignado: @story.AsignadoA</small><br />
+                        <small>Estimación: @story.Estimacion</small>
+
+                        <form asp-action="UpdateStatus" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@story.Id" />
+
+                            <select name="newStatus" class="form-select mt-2">
+                                <option>Backlog</option>
+                                <option>To Do</option>
+                                <option>In Progress</option>
+                                <option>Done</option>
+                            </select>
+
+                            <button type="submit" class="btn btn-primary btn-sm mt-2">
+                                Mover
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
 </div>

@@ -1,4 +1,6 @@
 using CasoEstudio1SMA.Data;
+using CasoEstudio1SMA.Repositories;
+using CasoEstudio1SMA.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<StoryDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IUserStoryRepository, UserStoryRepository>();
+builder.Services.AddScoped<IUserStoryService, UserStoryService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
